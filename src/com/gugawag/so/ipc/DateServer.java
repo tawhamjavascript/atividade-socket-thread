@@ -12,7 +12,6 @@ package com.gugawag.so.ipc;
 import java.net.*;
 import java.io.*;
 import java.util.Date;
-
 public class DateServer{
 	public static void main(String[] args)  {
 		try {
@@ -22,21 +21,29 @@ public class DateServer{
 			// escutando por conexões
 			while (true) {
 				Socket client = sock.accept();
-				// Se chegou aqui, foi porque algum cliente se comunicou
-				System.out.println("Servidor recebeu comunicação do ip: " + client.getInetAddress() + "-" + client.getPort());
-				PrintWriter pout = new PrintWriter(client.getOutputStream(), true);
+				Thread thread =  new Thread(() -> {
+					try {
+						// Se chegou aqui, foi porque algum cliente se comunicou
+						System.out.println("Servidor recebeu comunicação do ip: " + client.getInetAddress() + "-" + client.getPort());
+						PrintWriter pout = new PrintWriter(client.getOutputStream(), true);
 
-				// Escreve a data atual no socket
-				pout.println(new Date().toString() + "-Boa noite alunos!");
+						// Escreve a data atual no socket
+						pout.println("Taw-Ham Almeida Balbino de Paula");
 
-				InputStream in = client.getInputStream();
-				BufferedReader bin = new BufferedReader(new InputStreamReader(in));
+						InputStream in = client.getInputStream();
+						BufferedReader bin = new BufferedReader(new InputStreamReader(in));
 
-				String line = bin.readLine();
-				System.out.println("O cliente me disse:" + line);
+						String line = bin.readLine();
+						System.out.println("O cliente me disse:" + line);
 
-				// fechar o socket e volta no loop para escutar novas conexões
-				client.close();
+						// fechar o socket e volta no loop para escutar novas conexões
+						client.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				});
+
+				thread.start();
 			}
 		}
 		catch (IOException ioe) {
